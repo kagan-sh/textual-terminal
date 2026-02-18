@@ -8,6 +8,8 @@ Based on David Brochart's pyte example.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import asyncio
 import fcntl
 import os
@@ -68,12 +70,14 @@ class Terminal(Widget, can_focus=True):
         self,
         command: str,
         default_colors: str | None = "system",
+        on_escape: Callable[[], None] | None = None,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
     ) -> None:
         self.command = command
         self.default_colors = default_colors
+        self.on_escape = on_escape
 
         # Defer textual color detection until first use (app may not exist in __init__)
         self.textual_colors = None
@@ -157,6 +161,11 @@ class Terminal(Widget, can_focus=True):
 
         if event.key == "ctrl+f1":
             self.app.set_focus(None)
+            return
+
+        if event.key == "escape" and self.on_escape is not None:
+            event.stop()
+            self.on_escape()
             return
 
         event.stop()
