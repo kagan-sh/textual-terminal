@@ -13,6 +13,7 @@ from collections.abc import Callable
 import asyncio
 import fcntl
 import os
+import pty
 import re
 import shlex
 import signal
