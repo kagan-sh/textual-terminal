@@ -153,6 +153,12 @@ class Terminal(Widget, can_focus=True):
         self.emulator = None
         self.recv_task = None
 
+    async def send_input(self, text: str) -> None:
+        """Send text to the PTY (e.g. from external input widget)."""
+        if self.send_queue is None:
+            return
+        await self.send_queue.put(["stdin", text])
+
     def render(self):
         return self._display
 
