@@ -373,7 +373,12 @@ class TerminalEmulator:
         self.pid, fd = pty.fork()
         if self.pid == 0:
             argv = shlex.split(command)
-            env = dict(TERM="xterm", LC_ALL="en_US.UTF-8", HOME=str(Path.home()))
+            env = dict(
+                TERM="xterm",
+                LC_ALL="en_US.UTF-8",
+                HOME=str(Path.home()),
+                PYTHONUNBUFFERED="1",
+            )
             os.execvpe(argv[0], argv, env)
 
         return fd
@@ -383,7 +388,7 @@ class TerminalEmulator:
 
         def on_output():
             try:
-                self.data_or_disconnect = self.p_out.read(65536).decode()
+                self.data_or_disconnect = self.p_out.read(4096).decode()
                 self.event.set()
             except UnicodeDecodeError as error:
                 log.warning("decode error:", error)
