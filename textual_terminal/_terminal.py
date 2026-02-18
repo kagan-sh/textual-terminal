@@ -338,11 +338,16 @@ class Terminal(Widget, can_focus=True):
         return color
 
     def detect_textual_colors(self) -> dict:
-        """Returns the currently used colors of textual depending on dark-mode.
+        """Return colors from the active Textual theme."""
+        theme = getattr(self.app, "current_theme", None)
+        if theme is not None:
+            return {
+                "background": str(theme.background),
+                "foreground": str(theme.foreground),
+                "surface": str(theme.surface),
+                "accent": str(theme.accent),
+            }
 
-        Textual 7.x compatible: uses app.theme instead of deprecated
-        DEFAULT_COLORS and ColorSystem.
-        """
         is_dark = "dark" in str(self.app.theme).lower()
         return {
             "background": "#000000" if is_dark else "#ffffff",
